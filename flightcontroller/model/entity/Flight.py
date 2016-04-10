@@ -1,0 +1,2 @@
+class Flight(object):
+    pass

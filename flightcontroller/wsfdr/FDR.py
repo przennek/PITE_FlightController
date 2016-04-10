@@ -1,6 +1,6 @@
 import urllib2
 
-from flightcontroller.FDR.FDM import FDM
+from flightcontroller.wsfdr.FDM import FDM
 
 
 class FDR:
@@ -44,4 +44,4 @@ class FDR:
                 floc = str(str(line)[str(line).find("["):].split(",")[FDM.floc]).replace("\"", "")
                 if floc != '':
                     floc_set.add(floc)
-        print floc_set
+        return floc_set
