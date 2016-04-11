@@ -1,4 +1,6 @@
 import threading
+import urllib2
+
 from flightcontroller.model.dao.FlightDao import FlightDao
 from flightcontroller.model.dao.FlightDataDao import FlightDataDao
 from flightcontroller.wsfdr.FDR import FDR
@@ -32,7 +34,9 @@ class Collector:
         except IndexError:
             print "Collection won't start, invalid data from WS."
             self.collect = False
-
+        except urllib2.URLError:
+            print "<Collector> ending collection, no data from WS for given floc."
+            self.collect = False
         while self.collect:
             print str(self) + " retrieved data from remote WS."
             try:
@@ -42,6 +46,7 @@ class Collector:
             sleep(self.interval)
 
     def stop(self):
+        print str(self) + " stoping collection."
         self.collect = False
 
     def __str__(self):

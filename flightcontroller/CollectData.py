@@ -4,6 +4,16 @@ from flightcontroller.model.DBConnector import DBConnector
 from flightcontroller.util.Collector import Collector
 from flightcontroller.wsfdr.FDR import FDR
 
+collectors = []
+def clean_up_collectors():
+    global collectors
+    collectors_2 = []
+    for collector in collectors:
+        if collector.collect == True:
+            collectors_2.append(collector)
+
+    collectors = collectors_2
+
 if __name__ == "__main__":
     files = glob.glob("*.db")
     if 'flights.db' not in files:
@@ -12,10 +22,10 @@ if __name__ == "__main__":
 
     flightDataReader = FDR()
     DEFAULT_INTERV = 30
-    collectors = []
     program_on = True
     try:
         while program_on:
+            clean_up_collectors()
             print "---------------------------------------"
             print "0) List flights."
             print "1) Add flight collector (by flight num)."
@@ -47,8 +57,8 @@ if __name__ == "__main__":
             elif menu == 3:
                 colec = raw_input("Collector number: ")
                 try:
-                    colec = collectors.pop(int(colec))
-                    colec.stop()
+                    collectors[int(colec)].stop()
+                    clean_up_collectors()
                 except IndexError:
                     print "<Out of range, collection won't stop>"
             elif menu == 42:
@@ -59,8 +69,10 @@ if __name__ == "__main__":
                 program_on = False
                 for collector in collectors:
                     collector.stop()
+                clean_up_collectors()
                 print "WAITING FOR THREADS TO BE CLOSED GRACEFULLY."
     except (KeyboardInterrupt, SystemExit):
         for collector in collectors:
             collector.stop()
+        clean_up_collectors()
         print "THREADS WILL BE CLOSED GRACEFULLY."

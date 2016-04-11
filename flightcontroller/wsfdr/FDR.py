@@ -25,7 +25,14 @@ class FDR:
 
     def load_all_flights(self):
         request = urllib2.Request(self.url, headers=self.hdr)
-        content_result = urllib2.urlopen(request).read()
+        tries = 0
+        try:
+            content_result = urllib2.urlopen(request).read()
+        except urllib2.URLError:
+            if tries < 3:
+                content_result = urllib2.urlopen(request).read()
+            else:
+                raise urllib2.URLError('WS retrieve failed.')
         content_result = content_result.split('\n')
         return content_result
 
