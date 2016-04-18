@@ -1,3 +1,7 @@
+from sqlalchemy import select
+
+from flightcontroller.model.DBConnector import DBConnector
+from flightcontroller.model.DBSchema import DBSchema
 from flightcontroller.model.dao.AbstractDao import AbstractDao
 from flightcontroller.model.dao.FlightDao import FlightDao
 from flightcontroller.model.entity.FlightData import FlightData
@@ -20,3 +24,12 @@ class FlightDataDao(AbstractDao):
         session.flush()
         session.commit()
 
+    def get_flight_data(self, fid):
+        dbSchema = DBSchema.instance()
+        flight_data_table = dbSchema.get_flight_data_table()
+        sel = select([flight_data_table.c.LATITUDE, flight_data_table.c.LONGTITUDE]).where(flight_data_table.c.flight_id == fid)
+        connector = DBConnector.instance().get_engine().connect()
+        result = connector.execute(sel)
+        rows = result.fetchall()
+        result.close()
+        return rows

@@ -38,3 +38,13 @@ class FlightDao(AbstractDao):
             return None
         else:
             return fid[0]
+
+    def availble_flights(self):
+        dbSchema = DBSchema.instance()
+        flight_table = dbSchema.get_flight_table()
+        sel = select([flight_table.c.FLOC])
+        connector = DBConnector.instance().get_engine().connect()
+        result = connector.execute(sel)
+        flights = result.fetchall()
+        result.close()
+        return flights
